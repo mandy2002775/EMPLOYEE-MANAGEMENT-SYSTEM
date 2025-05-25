@@ -6,7 +6,6 @@ import model.Manager;
 import model.RegularEmployee;
 import service.EmployeeManager;
 
-import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Scanner;
 
@@ -87,7 +86,8 @@ public class ConsoleInterface {
         try {
             System.out.print("Enter ID to delete: ");
             int id = Integer.parseInt(scanner.nextLine());
-            if (manager.removeEmployeeById(id)) {
+            // Corrected method name here to deleteEmployee
+            if (manager.deleteEmployee(id)) {
                 System.out.println("Deleted successfully.");
             } else {
                 System.out.println("Employee not found.");
