@@ -35,7 +35,7 @@ public class GUIInterface {
         JPanel topPanel = new JPanel();
         JButton addBtn = new JButton("Add");
         JButton updateBtn = new JButton("Update");
-        JButton refreshBtn = new JButton("Refresh");
+        JButton deleteBtn = new JButton("Delete");  // Changed from Refresh
         JComboBox<String> sortCombo = new JComboBox<>(new String[]{
                 "Sort By Name Asc", "Sort By Name Desc",
                 "Sort By Salary Asc", "Sort By Salary Desc"
@@ -44,7 +44,7 @@ public class GUIInterface {
         topPanel.add(addBtn);
         topPanel.add(updateBtn);
         topPanel.add(sortCombo);
-        topPanel.add(refreshBtn);
+        topPanel.add(deleteBtn);  // Add delete button to panel
         frame.add(topPanel, BorderLayout.NORTH);
 
         // Table Panel
@@ -53,7 +53,7 @@ public class GUIInterface {
         // Event Handlers
         addBtn.addActionListener(e -> showAddDialog());
         updateBtn.addActionListener(e -> showUpdateDialog());
-        refreshBtn.addActionListener(e -> refreshTable());
+        deleteBtn.addActionListener(e -> deleteSelectedEmployee());
 
         sortCombo.addActionListener((ActionEvent e) -> {
             int selected = sortCombo.getSelectedIndex();
@@ -143,6 +143,41 @@ public class GUIInterface {
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(frame, "Invalid ID or salary input.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void deleteSelectedEmployee() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(frame, "Please select an employee to delete.", "Warning", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete the selected employee?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        Object idObj = tableModel.getValueAt(selectedRow, 0);
+        int id;
+
+        try {
+            if (idObj instanceof Integer) {
+                id = (Integer) idObj;
+            } else {
+                id = Integer.parseInt(idObj.toString());
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(frame, "Invalid ID value.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        boolean deleted = manager.deleteEmployee(id);
+        if (deleted) {
+            refreshTable();
+            JOptionPane.showMessageDialog(frame, "Employee deleted successfully.");
+        } else {
+            JOptionPane.showMessageDialog(frame, "Failed to delete employee.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
