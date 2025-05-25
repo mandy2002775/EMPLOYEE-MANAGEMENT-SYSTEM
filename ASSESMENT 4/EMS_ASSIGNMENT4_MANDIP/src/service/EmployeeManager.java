@@ -1,30 +1,27 @@
 package service;
 
 import model.Employee;
-
-import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EmployeeManager {
-    private List<Employee> employees = new ArrayList<>();
+    private final List<Employee> employees;
 
-    public void addEmployee(Employee e) {
-        employees.add(e);
+    public EmployeeManager() {
+        this.employees = new ArrayList<>();
     }
 
-    public boolean removeEmployeeById(int id) {
-        return employees.removeIf(e -> e.getId() == id);
+    public void addEmployee(Employee employee) {
+        employees.add(employee);
     }
 
     public Employee getEmployeeById(int id) {
         for (Employee e : employees) {
-            if (e.getId() == id) return e;
+            if (e.getId() == id) {
+                return e;
+            }
         }
         return null;
-    }
-
-    public List<Employee> getAllEmployees() {
-        return employees;
     }
 
     public boolean updateEmployee(int id, String newName, double newSalary) {
@@ -37,35 +34,32 @@ public class EmployeeManager {
         return false;
     }
 
+    public boolean deleteEmployee(int id) {
+        Employee e = getEmployeeById(id);
+        if (e != null) {
+            employees.remove(e);
+            return true;
+        }
+        return false;
+    }
+
+    public List<Employee> getAllEmployees() {
+        return employees;
+    }
+
     public void sortByNameAsc() {
-        employees.sort(Comparator.comparing(Employee::getName));
+        employees.sort((a, b) -> a.getName().compareToIgnoreCase(b.getName()));
     }
 
     public void sortByNameDesc() {
-        employees.sort(Comparator.comparing(Employee::getName).reversed());
+        employees.sort((a, b) -> b.getName().compareToIgnoreCase(a.getName()));
     }
 
     public void sortBySalaryAsc() {
-        employees.sort(Comparator.comparingDouble(Employee::getSalary));
+        employees.sort((a, b) -> Double.compare(a.getSalary(), b.getSalary()));
     }
 
     public void sortBySalaryDesc() {
-        employees.sort(Comparator.comparingDouble(Employee::getSalary).reversed());
-    }
-
-    public void saveToFile(String filename) {
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename))) {
-            out.writeObject(employees);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void loadFromFile(String filename) {
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename))) {
-            employees = (List<Employee>) in.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+        employees.sort((a, b) -> Double.compare(b.getSalary(), a.getSalary()));
     }
 }
